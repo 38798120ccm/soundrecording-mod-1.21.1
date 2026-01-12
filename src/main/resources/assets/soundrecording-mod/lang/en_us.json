@@ -1,0 +1,8 @@
+{
+  "itemGroup.soundrecording-mod": "Sound Recording Mod",
+
+  "item.soundrecording-mod.test_item": "Test item",
+  "item.soundrecording-mod.microphone": "Microphone",
+  "item.soundrecording-mod.mp4player": "Mp4Player",
+  "item.soundrecording-mod.microsd": "MicroSD"
+}
