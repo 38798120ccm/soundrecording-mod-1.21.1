@@ -4,5 +4,6 @@
   "item.soundrecording-mod.test_item": "Test item",
   "item.soundrecording-mod.microphone": "Microphone",
   "item.soundrecording-mod.mp4player": "Mp4Player",
+  "soundrecording-mod.tick": "Tick: %1$s",
   "item.soundrecording-mod.microsd": "MicroSD"
 }

@@ -1,4 +1,5 @@
 package com.soundrecording.Items;
+import com.soundrecording.Componets.MP4PlayerComponent;
 import com.soundrecording.Componets.ModComponets;
 import com.soundrecording.SoundRecordingMod;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
@@ -18,7 +19,7 @@ public class ModItems {
 //    public static final Item TESTITEM = register("test_item", Item::new, new Item.Settings());
     public static final Item MICROPHONE = register("microphone", new Microphone(new Microphone.Settings().maxCount(1)));
     public static final Item MP4PLAYER = register("mp4player", new MP4Player(new MP4Player.Settings().maxCount(1).component(
-            ModComponets.MP4PLAYER_COMPONENT, null
+            ModComponets.MP4PLAYER_COMPONENT, new MP4PlayerComponent(ItemStack.EMPTY, 0, 0)
     )));
     public static final Item MICROSD = register("microsd", new MicroSD(new MicroSD.Settings()));
 //    public static final Item USEDMICROSD = register("usedmicrosd", MicroSD::new, new MicroSD.Settings().maxCount(1).component(

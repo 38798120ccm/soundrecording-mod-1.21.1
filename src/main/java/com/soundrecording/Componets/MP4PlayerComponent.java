@@ -16,7 +16,10 @@ public record MP4PlayerComponent(ItemStack itemStack, int tick, int status) {
     );
 
     public ItemStack getItem(){
-        return itemStack;
+        if(itemStack != null){
+            return itemStack;
+        }
+        return ItemStack.EMPTY;
     }
 
     public ActionResult startRecording(){
