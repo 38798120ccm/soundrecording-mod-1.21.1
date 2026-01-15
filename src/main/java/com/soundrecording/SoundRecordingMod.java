@@ -2,8 +2,11 @@ package com.soundrecording;
 
 import com.soundrecording.Componets.ModComponets;
 import com.soundrecording.Items.ModItems;
+import com.soundrecording.Payload.ItemStackPayload;
+import com.soundrecording.Screens.ModScreenHandler;
 import net.fabricmc.api.ModInitializer;
 
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,6 +26,8 @@ public class SoundRecordingMod implements ModInitializer {
 
 		ModComponets.initialize();
 		ModItems.initialize();
+		ModScreenHandler.initialize();
+
 		LOGGER.info("Hello Fabric world!");
 	}
 }
