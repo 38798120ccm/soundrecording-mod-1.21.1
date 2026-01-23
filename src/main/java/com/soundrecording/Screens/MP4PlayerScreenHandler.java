@@ -2,25 +2,22 @@ package com.soundrecording.Screens;
 
 import com.soundrecording.Componets.MP4PlayerComponent;
 import com.soundrecording.Componets.ModComponets;
-import com.soundrecording.Interface.ImplementedInventory;
-import com.soundrecording.Interface.MP4PlayerInventory;
-import com.soundrecording.Items.MP4Player;
+import com.soundrecording.Items.MP4Player.MP4PlayerInventory;
+import com.soundrecording.Items.MP4Player.MP4PlayerSlot;
+import com.soundrecording.Items.MP4Player.MP4PlayerStatus;
 import com.soundrecording.Payload.ItemStackPayload;
-import com.soundrecording.SoundRecordingMod;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
-import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
-import net.minecraft.util.Hand;
-import net.minecraft.util.collection.DefaultedList;
 
 public class MP4PlayerScreenHandler extends ScreenHandler {
     private final ItemStack itemStack;
+    private final PlayerInventory playerInventory;
     private final MP4PlayerComponent mp4PlayerComponent;
-    private final SimpleInventory simpleInventory;
+    private final MP4PlayerInventory mp4PlayerInventory;
 
     // Client Constructor
     public MP4PlayerScreenHandler(int synvId, PlayerInventory playerInventory, ItemStackPayload payload){
@@ -32,9 +29,10 @@ public class MP4PlayerScreenHandler extends ScreenHandler {
         super(ModScreenHandler.MP4PLAYER_SCREEN_HANDLER, syncId);
         this.itemStack = itemStack;
         this.mp4PlayerComponent = itemStack.get(ModComponets.MP4PLAYER_COMPONENT);
-        this.simpleInventory = new MP4PlayerInventory(mp4PlayerComponent.itemStack());
+        this.mp4PlayerInventory = new MP4PlayerInventory(this, mp4PlayerComponent.itemStack());
+        this.playerInventory = playerInventory;
 
-        this.addSlot(new Slot(simpleInventory, 0, 80, 35));
+        this.addSlot(new MP4PlayerSlot(mp4PlayerInventory, 0, 80, 35));
 
         addPlayerInventory(playerInventory);
         addPlayerHotbar(playerInventory);
@@ -47,11 +45,11 @@ public class MP4PlayerScreenHandler extends ScreenHandler {
         if(slot != null && slot.hasStack()){
             ItemStack originalStack = slot.getStack();
             newStack = originalStack.copy();
-            if(invSlot < this.simpleInventory.size()){
-                if(!this.insertItem(originalStack, this.simpleInventory.size(), this.slots.size(), true)){
+            if(invSlot < this.mp4PlayerInventory.size()){
+                if(!this.insertItem(originalStack, this.mp4PlayerInventory.size(), this.slots.size(), true)){
                     return ItemStack.EMPTY;
                 }
-            } else if(!this.insertItem(originalStack,0, this.simpleInventory.size(), false)){
+            } else if(!this.insertItem(originalStack,0, this.mp4PlayerInventory.size(), false)){
                 return ItemStack.EMPTY;
             }
 
@@ -66,14 +64,15 @@ public class MP4PlayerScreenHandler extends ScreenHandler {
 
     @Override
     public boolean canUse(PlayerEntity player) {
-        return this.simpleInventory.canPlayerUse(player);
+        return this.mp4PlayerInventory.canPlayerUse(player);
     }
 
     @Override
-    public void onClosed(PlayerEntity player){
-        itemStack.set(ModComponets.MP4PLAYER_COMPONENT, new MP4PlayerComponent(simpleInventory.getStack(0), 0, 0));
-        SoundRecordingMod.LOGGER.info("onContentChanged", SoundRecordingMod.MOD_ID);
+    public void onContentChanged(Inventory inventory){
+        itemStack.set(ModComponets.MP4PLAYER_COMPONENT, new MP4PlayerComponent(mp4PlayerInventory.getStack(0), 0, MP4PlayerStatus.Idle.getValue()));
+        //SoundRecordingMod.LOGGER.info("Mp4player_onContentChanged", SoundRecordingMod.MOD_ID);
     }
+
 
     private void addPlayerInventory(PlayerInventory playerInventory){
         for(int i=0; i<3; ++i){

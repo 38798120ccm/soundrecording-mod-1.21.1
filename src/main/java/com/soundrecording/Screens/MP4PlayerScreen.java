@@ -4,7 +4,9 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.soundrecording.SoundRecordingMod;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
+import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.render.GameRenderer;
+import net.minecraft.client.toast.SystemToast;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -15,6 +17,15 @@ public class MP4PlayerScreen extends HandledScreen<MP4PlayerScreenHandler> {
 
     public MP4PlayerScreen(MP4PlayerScreenHandler handler, PlayerInventory inventory, Text title){
         super(handler, inventory, title);
+    }
+
+    @Override
+    protected void init(){
+        super.init();
+        ButtonWidget buttonWidget = ButtonWidget.builder(Text.of("Start Recording"), (btn) -> {
+//            getScreenHandler()
+        }).dimensions(40, 40, 120, 20).build();
+        this.addDrawableChild(buttonWidget);
     }
 
     @Override

@@ -22,4 +22,10 @@ public class ModComponets {
             Identifier.of(SoundRecordingMod.MOD_ID, "mp4player_component"),
             ComponentType.<MP4PlayerComponent>builder().codec(MP4PlayerComponent.CODEC).build()
     );
+
+    public static final ComponentType<TestComponent> TEST_COMPONENT = Registry.register(
+            Registries.DATA_COMPONENT_TYPE,
+            Identifier.of(SoundRecordingMod.MOD_ID, "test_component"),
+            ComponentType.<TestComponent>builder().codec(TestComponent.CODEC).build()
+    );
 }

@@ -23,10 +23,10 @@ public class MicroSD extends Item {
     @Override
     public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type){
         super.appendTooltip(stack, context, tooltip, type);
+        if (!stack.contains(ModComponets.RECORDING_COMPONENT)) return;
         RecordingComponent recordingComponent = stack.get(ModComponets.RECORDING_COMPONENT);
-        if (recordingComponent == null) return;
         int size = recordingComponent.size();
-        tooltip.add(Text.translatable(null,size));
+        tooltip.add(Text.translatable(String.valueOf(size)));
     }
 
     @Override

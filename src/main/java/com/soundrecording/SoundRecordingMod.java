@@ -1,6 +1,7 @@
 package com.soundrecording;
 
 import com.soundrecording.Componets.ModComponets;
+import com.soundrecording.Events.ModEvents;
 import com.soundrecording.Items.ModItems;
 import com.soundrecording.Payload.ItemStackPayload;
 import com.soundrecording.Screens.ModScreenHandler;
@@ -27,6 +28,7 @@ public class SoundRecordingMod implements ModInitializer {
 		ModComponets.initialize();
 		ModItems.initialize();
 		ModScreenHandler.initialize();
+		ModEvents.addListeners();
 
 		LOGGER.info("Hello Fabric world!");
 	}
