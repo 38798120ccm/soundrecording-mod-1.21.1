@@ -51,20 +51,20 @@ public class MP4Player extends Item implements ExtendedScreenHandlerFactory<Item
         MP4PlayerComponent mp4PlayerComponent = itemStack.get(ModComponets.MP4PLAYER_COMPONENT);
 
         if (!world.isClient()) {
-            if(mp4PlayerComponent.status() == MP4PlayerStatus.Recording.getValue()){
-                itemStack.set(ModComponets.MP4PLAYER_COMPONENT, new MP4PlayerComponent(mp4PlayerComponent.itemStack(), 0, MP4PlayerStatus.Idle.getValue()));
+//            if(mp4PlayerComponent.status() == MP4PlayerStatus.Recording.getValue()) {
+//                itemStack.set(ModComponets.MP4PLAYER_COMPONENT, new MP4PlayerComponent(mp4PlayerComponent.itemStack(), 0, MP4PlayerStatus.Idle.getValue()));
+//            }
+            if(user.isSneaking()) {
+                    user.openHandledScreen(this);
             }
-            else if(user.isSneaking()){
-                user.openHandledScreen(this);
-            }
-            else if(mp4PlayerComponent.itemStack() != ItemStack.EMPTY){
-                if(mp4PlayerComponent.status() != MP4PlayerStatus.SoundPlaying.getValue()) {
-                    itemStack.set(ModComponets.MP4PLAYER_COMPONENT, new MP4PlayerComponent(mp4PlayerComponent.itemStack(), 0, MP4PlayerStatus.SoundPlaying.getValue()));
-                }
-                else {
-                    itemStack.set(ModComponets.MP4PLAYER_COMPONENT, new MP4PlayerComponent(mp4PlayerComponent.itemStack(), 0, MP4PlayerStatus.Idle.getValue()));
-                }
-            }
+//            else if(mp4PlayerComponent.itemStack() != ItemStack.EMPTY){
+//                if(mp4PlayerComponent.status() != MP4PlayerStatus.SoundPlaying.getValue()) {
+//                    itemStack.set(ModComponets.MP4PLAYER_COMPONENT, new MP4PlayerComponent(mp4PlayerComponent.itemStack(), 0, MP4PlayerStatus.SoundPlaying.getValue()));
+//                }
+//                else {
+//                    itemStack.set(ModComponets.MP4PLAYER_COMPONENT, new MP4PlayerComponent(mp4PlayerComponent.itemStack(), 0, MP4PlayerStatus.Idle.getValue()));
+//                }
+//            }
         }
         return TypedActionResult.pass(user.getStackInHand(hand));
     }
