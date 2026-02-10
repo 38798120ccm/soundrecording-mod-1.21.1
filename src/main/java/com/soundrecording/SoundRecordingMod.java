@@ -1,13 +1,11 @@
 package com.soundrecording;
 
-import com.soundrecording.Componets.ModComponets;
+import com.soundrecording.Componets.ModComponents;
 import com.soundrecording.Events.ModEvents;
 import com.soundrecording.Items.ModItems;
-import com.soundrecording.Payload.ItemStackPayload;
 import com.soundrecording.Screens.ModScreenHandler;
 import net.fabricmc.api.ModInitializer;
 
-import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,7 +23,7 @@ public class SoundRecordingMod implements ModInitializer {
 		// However, some things (like resources) may still be uninitialized.
 		// Proceed with mild caution.
 
-		ModComponets.initialize();
+		ModComponents.initialize();
 		ModItems.initialize();
 		ModScreenHandler.initialize();
 		ModEvents.addListeners();

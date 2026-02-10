@@ -1,6 +1,5 @@
 package com.soundrecording.Items.MP4Player;
 
-import com.soundrecording.Componets.ModComponets;
 import com.soundrecording.Items.ModItems;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
