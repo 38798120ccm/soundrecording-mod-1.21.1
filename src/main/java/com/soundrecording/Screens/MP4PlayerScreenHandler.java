@@ -1,12 +1,10 @@
 package com.soundrecording.Screens;
 
-import com.soundrecording.Componets.ItemStackComponent;
-import com.soundrecording.Componets.MP4PlayerComponent;
-import com.soundrecording.Componets.ModComponents;
-import com.soundrecording.Componets.StatusComponent;
+import com.soundrecording.Componets.*;
 import com.soundrecording.Items.MP4Player.MP4PlayerInventory;
 import com.soundrecording.Items.MP4Player.MP4PlayerSlot;
 import com.soundrecording.Items.MP4Player.MP4PlayerStatus;
+import com.soundrecording.Items.ModItems;
 import com.soundrecording.Payload.ItemStackPayload;
 import com.soundrecording.SoundRecordingMod;
 import net.minecraft.client.MinecraftClient;
@@ -73,15 +71,18 @@ public class MP4PlayerScreenHandler extends ScreenHandler {
     @Override
     public void onContentChanged(Inventory inventory){
         itemStack.set(ModComponents.ITEMSTACK_COMPONENT, new ItemStackComponent(mp4PlayerInventory.getStack(0)));
+        itemStack.set(ModComponents.STATUS_COMPONENT, new StatusComponent(MP4PlayerStatus.Idle.ordinal()));
+        itemStack.set(ModComponents.TICK_COMPONENT, new TickComponent(0));
     }
 
     public void setRecordingState(){
         itemStack.set(ModComponents.STATUS_COMPONENT, new StatusComponent(MP4PlayerStatus.Recording.ordinal()));
+        itemStack.set(ModComponents.TICK_COMPONENT, new TickComponent(0));
     }
 
     @Override
     public boolean onButtonClick(PlayerEntity player, int id) {
-        if(id == 0){
+        if(id == 0 && itemStack.get(ModComponents.ITEMSTACK_COMPONENT).itemStack().isOf(ModItems.MICROSD)){
             setRecordingState();
         }
         return super.onButtonClick(player, id);

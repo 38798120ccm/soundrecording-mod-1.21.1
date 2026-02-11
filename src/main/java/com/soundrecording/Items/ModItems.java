@@ -26,7 +26,9 @@ public class ModItems {
             .component(ModComponents.ITEMSTACK_COMPONENT, new ItemStackComponent(ItemStack.EMPTY))
             .component(ModComponents.TICK_COMPONENT, new TickComponent(0))
             .component(ModComponents.STATUS_COMPONENT, new StatusComponent(0))));
-    public static final Item MICROSD = register("microsd", new MicroSD(new MicroSD.Settings()));
+    public static final Item MICROSD = register("microsd", new MicroSD(new MicroSD.Settings()
+            .component(ModComponents.RECORDING_COMPONENT, new RecordingComponent())
+            .component(ModComponents.TICK_COMPONENT, new TickComponent(0))));
 
     public static Item register(String id, Item item){
         // Create the identifier for the item.

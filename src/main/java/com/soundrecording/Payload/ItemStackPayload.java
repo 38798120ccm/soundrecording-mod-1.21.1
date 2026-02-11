@@ -8,12 +8,12 @@ import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.util.Identifier;
 
 public record ItemStackPayload(ItemStack itemStack) implements CustomPayload {
-    public static final Id<ItemStackPayload> ID = new Id<>(Identifier.of(SoundRecordingMod.MOD_ID, "itemstack"));
+    public static final Id<ItemStackPayload> ID = new Id<>(Identifier.of(SoundRecordingMod.MOD_ID, "itemstack-payload"));
     public static final PacketCodec<RegistryByteBuf, ItemStackPayload> PACKET_CODEC =
             PacketCodec.tuple(ItemStack.PACKET_CODEC, ItemStackPayload::itemStack, ItemStackPayload::new);
 
     @Override
     public Id<? extends CustomPayload> getId() {
-        return null;
+        return ID;
     }
 }

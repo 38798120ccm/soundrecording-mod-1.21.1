@@ -1,12 +1,12 @@
 package com.soundrecording.Items.MP4Player;
 
-import com.soundrecording.Componets.MP4PlayerComponent;
-import com.soundrecording.Componets.ModComponents;
-import com.soundrecording.Componets.StatusComponent;
-import com.soundrecording.Componets.TickComponent;
+import com.soundrecording.Componets.*;
+import com.soundrecording.Items.ModItems;
 import com.soundrecording.Payload.ItemStackPayload;
 import com.soundrecording.Screens.MP4PlayerScreenHandler;
+import com.soundrecording.SoundRecordingMod;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
+import net.minecraft.client.sound.Sound;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -51,10 +51,27 @@ public class MP4Player extends Item implements ExtendedScreenHandlerFactory<Item
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         ItemStack itemStack = user.getStackInHand(Hand.MAIN_HAND);
-
         if (!world.isClient()) {
+            TickComponent tickComponent = itemStack.get(ModComponents.TICK_COMPONENT);
+            ItemStackComponent itemStackComponent = itemStack.get(ModComponents.ITEMSTACK_COMPONENT);
+            StatusComponent statusComponent = itemStack.get(ModComponents.STATUS_COMPONENT);
             if(user.isSneaking()) {
                     user.openHandledScreen(this);
+            }
+            else if(itemStackComponent.itemStack().contains(ModComponents.TICK_COMPONENT)){
+                if(statusComponent.status() == MP4PlayerStatus.Recording.ordinal()){
+                    itemStack.set(ModComponents.STATUS_COMPONENT, new StatusComponent(MP4PlayerStatus.Idle.ordinal()));
+                    itemStack.set(ModComponents.TICK_COMPONENT, new TickComponent(0));
+                    itemStackComponent.itemStack().set(ModComponents.TICK_COMPONENT, new TickComponent(tickComponent.tick()));
+                }
+                else if(statusComponent.status() == MP4PlayerStatus.Idle.ordinal()){
+                    itemStack.set(ModComponents.STATUS_COMPONENT, new StatusComponent(MP4PlayerStatus.SoundPlaying.ordinal()));
+                    itemStack.set(ModComponents.TICK_COMPONENT, new TickComponent(0));
+                }
+                else if(statusComponent.status() == MP4PlayerStatus.SoundPlaying.ordinal()){
+                    itemStack.set(ModComponents.STATUS_COMPONENT, new StatusComponent(MP4PlayerStatus.Idle.ordinal()));
+                    itemStack.set(ModComponents.TICK_COMPONENT, new TickComponent(0));
+                }
             }
         }
         return TypedActionResult.pass(user.getStackInHand(hand));
@@ -62,6 +79,22 @@ public class MP4Player extends Item implements ExtendedScreenHandlerFactory<Item
 
     @Override
     public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
+        if(stack.contains(ModComponents.ITEMSTACK_COMPONENT)){
+            StatusComponent statusComponent = stack.get(ModComponents.STATUS_COMPONENT);
+            TickComponent tickComponent = stack.get(ModComponents.TICK_COMPONENT);
+            int nexttick = tickComponent.tick() + 1;
+            if(statusComponent.status() == MP4PlayerStatus.Recording.ordinal()){
+                stack.set(ModComponents.TICK_COMPONENT, new TickComponent(nexttick));
+                //SoundRecordingMod.LOGGER.info("inventoryTick-recording");
+            }
+            else if(statusComponent.status() == MP4PlayerStatus.SoundPlaying.ordinal()){
+                if(tickComponent.tick() >= stack.get(ModComponents.ITEMSTACK_COMPONENT).itemStack().get(ModComponents.TICK_COMPONENT).tick()){
+                    stack.set(ModComponents.TICK_COMPONENT, new TickComponent(0));
+                }
+                else stack.set(ModComponents.TICK_COMPONENT, new TickComponent(nexttick));
+                //SoundRecordingMod.LOGGER.info("inventoryTick-soundplaying");
+            }
+        }
     }
 
     @Override

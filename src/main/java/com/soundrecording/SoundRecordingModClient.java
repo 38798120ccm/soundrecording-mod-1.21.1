@@ -1,13 +1,8 @@
 package com.soundrecording;
 
-import com.soundrecording.Payload.ItemStackPayload;
 import com.soundrecording.Screens.MP4PlayerScreen;
 import com.soundrecording.Screens.ModScreenHandler;
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
-import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.ingame.HandledScreens;
 
 public class SoundRecordingModClient implements ClientModInitializer {
