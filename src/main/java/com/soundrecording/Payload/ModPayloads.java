@@ -1,10 +1,14 @@
 package com.soundrecording.Payload;
 
+import com.soundrecording.Componets.ItemStackComponent;
 import com.soundrecording.Componets.ModComponents;
 import com.soundrecording.Componets.RecordingComponent;
+import com.soundrecording.Componets.TickComponent;
 import com.soundrecording.SoundRecordingMod;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.item.ItemStack;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
 import java.util.ArrayList;
@@ -18,13 +22,20 @@ public class ModPayloads {
 
     static void RegisterItemStackRecordC2SPayload(){
         ServerPlayNetworking.registerGlobalReceiver(ItemStackRecordC2SPayload.ID, (payload, context) -> {
-            SoundPayload soundPayload = payload.soundPayload();
-            payload.itemStack().set(ModComponents.RECORDING_COMPONENT, recordSound2Component(
-                    payload.itemStack().get(ModComponents.RECORDING_COMPONENT), soundPayload.soundId(),
-                    soundPayload.x(), soundPayload.y(), soundPayload.z(),
-                    payload.tick(), soundPayload.volume(), soundPayload.pitch()
-            ));
-            SoundRecordingMod.LOGGER.info("ItemStackRecordC2SPayload recorded");
+            context.server().execute(() -> {
+                SoundPayload soundPayload = payload.soundPayload();
+                ServerPlayerEntity player = context.player();
+                ItemStack mp4Stack = player.getInventory().getStack(payload.slotId());
+                ItemStack sdStack = mp4Stack.get(ModComponents.ITEMSTACK_COMPONENT).itemStack();
+                sdStack.set(ModComponents.RECORDING_COMPONENT, recordSound2Component(
+                        sdStack.get(ModComponents.RECORDING_COMPONENT), soundPayload.soundId(),
+                        soundPayload.x(), soundPayload.y(), soundPayload.z(),
+                        payload.tick(), soundPayload.volume(), soundPayload.pitch()
+                ));
+
+                mp4Stack.set(ModComponents.ITEMSTACK_COMPONENT, new ItemStackComponent(sdStack));
+                //SoundRecordingMod.LOGGER.info("ItemStackRecordC2SPayload recorded");
+            });
         });
     }
 
