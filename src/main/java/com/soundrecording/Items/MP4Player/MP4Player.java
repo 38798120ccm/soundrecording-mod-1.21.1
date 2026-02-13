@@ -15,6 +15,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvent;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
@@ -51,7 +54,7 @@ public class MP4Player extends Item implements ExtendedScreenHandlerFactory<Item
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         ItemStack itemStack = user.getStackInHand(Hand.MAIN_HAND);
-        if (!world.isClient()) {
+        if (!world.isClient) {
             TickComponent tickComponent = itemStack.get(ModComponents.TICK_COMPONENT);
             ItemStackComponent itemStackComponent = itemStack.get(ModComponents.ITEMSTACK_COMPONENT);
             StatusComponent statusComponent = itemStack.get(ModComponents.STATUS_COMPONENT);
@@ -91,7 +94,20 @@ public class MP4Player extends Item implements ExtendedScreenHandlerFactory<Item
                 if(tickComponent.tick() >= stack.get(ModComponents.ITEMSTACK_COMPONENT).itemStack().get(ModComponents.TICK_COMPONENT).tick()){
                     stack.set(ModComponents.TICK_COMPONENT, new TickComponent(0));
                 }
-                else stack.set(ModComponents.TICK_COMPONENT, new TickComponent(nexttick));
+                else {
+                    if(world.isClient){
+                        RecordingComponent rc = stack.get(ModComponents.ITEMSTACK_COMPONENT).itemStack().get(ModComponents.RECORDING_COMPONENT);
+                        for(int i=0; i<rc.tick().size(); i++){
+                            if(rc.tick().get(i) == tickComponent.tick()){
+                                world.playSound(rc.x().get(i).doubleValue() + entity.getX(), rc.y().get(i).doubleValue() + entity.getY(),
+                                        rc.z().get(i).doubleValue() + entity.getZ(),
+                                        SoundEvent.of(rc.identifiers().get(i)), SoundCategory.RECORDS,
+                                        rc.volume().get(i).floatValue(), rc.pitch().get(i).floatValue(), false);
+                            }
+                        }
+                    }
+                    stack.set(ModComponents.TICK_COMPONENT, new TickComponent(nexttick));
+                }
                 //SoundRecordingMod.LOGGER.info("inventoryTick-soundplaying");
             }
         }

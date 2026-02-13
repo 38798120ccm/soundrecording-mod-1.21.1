@@ -27,10 +27,9 @@ public class SoundListener implements SoundInstanceListener {
                 ItemStackRecordC2SPayload itemStackRecordC2SPayload =
                         new ItemStackRecordC2SPayload(
                                 new SoundPayload(sound.getId(), sound.getVolume(), sound.getPitch(),
-                                        player.getX() - sound.getX(), player.getY() - sound.getY(), player.getZ() - sound.getZ()),
+                                        sound.getX() - player.getX(), sound.getY() - player.getY(), sound.getZ() - player.getZ()),
                                 i, stack.get(ModComponents.TICK_COMPONENT).tick()
                         );
-
                 ClientPlayNetworking.send(itemStackRecordC2SPayload);
             }
         }
