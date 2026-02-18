@@ -1,9 +1,6 @@
 package com.soundrecording.Payload;
 
-import com.soundrecording.Componets.ItemStackComponent;
-import com.soundrecording.Componets.ModComponents;
-import com.soundrecording.Componets.RecordingComponent;
-import com.soundrecording.Componets.TickComponent;
+import com.soundrecording.Componets.*;
 import com.soundrecording.SoundRecordingMod;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -29,7 +26,7 @@ public class ModPayloads {
                 ItemStack sdStack = mp4Stack.get(ModComponents.ITEMSTACK_COMPONENT).itemStack();
                 sdStack.set(ModComponents.RECORDING_COMPONENT, recordSound2Component(
                         sdStack.get(ModComponents.RECORDING_COMPONENT), soundPayload.soundId(),
-                        soundPayload.x(), soundPayload.y(), soundPayload.z(),
+                        soundPayload.pos(), soundPayload.dir(),
                         payload.tick(), soundPayload.volume(), soundPayload.pitch()
                 ));
 
@@ -40,28 +37,26 @@ public class ModPayloads {
     }
 
     static RecordingComponent recordSound2Component(RecordingComponent rc, Identifier identifier,
-                                             double x, double y, double z, int tick, double volume, double pitch){
+                                             PositionPayload pos, DirectionPayload dir, int tick, double volume, double pitch){
         if(rc == null){
             rc = new RecordingComponent();
         }
 
         ArrayList<Identifier> id = new ArrayList<>(rc.identifiers());
-        ArrayList<Double> xlist = new ArrayList<>(rc.x());
-        ArrayList<Double> ylist = new ArrayList<>(rc.y());
-        ArrayList<Double> zlist = new ArrayList<>(rc.z());
+        ArrayList<PositionComponent> poslist = new ArrayList<>(rc.pos());
+        ArrayList<DirectionComponent> dirlist = new ArrayList<>(rc.dir());
         ArrayList<Integer> ticklist = new ArrayList<>(rc.tick());
         ArrayList<Double> volumelist = new ArrayList<>(rc.volume());
         ArrayList<Double> pitchlist = new ArrayList<>(rc.pitch());
 
         id.add(identifier);
-        xlist.add(x);
-        ylist.add(y);
-        zlist.add(z);
+        poslist.add(pos.toComponent());
+        dirlist.add(dir.toComponent());
         ticklist.add(tick);
         volumelist.add(volume);
         pitchlist.add(pitch);
 
-        return new RecordingComponent(id, xlist, ylist, zlist, ticklist, volumelist, pitchlist, rc.size()+1);
+        return new RecordingComponent(id, poslist, dirlist, ticklist, volumelist, pitchlist, rc.size()+1);
     }
 }
 

@@ -33,11 +33,21 @@ public class ModComponents {
             Identifier.of(SoundRecordingMod.MOD_ID, "status_component"),
             ComponentType.<StatusComponent>builder().codec(StatusComponent.CODEC).build()
     );
+    public static final ComponentType<IsDirectionalComponent> IS_DIRECTIONAL_COMPONENT = Registry.register(
+            Registries.DATA_COMPONENT_TYPE,
+            Identifier.of(SoundRecordingMod.MOD_ID, "isdirectional_component"),
+            ComponentType.<IsDirectionalComponent>builder().codec(IsDirectionalComponent.CODEC).build()
+    );
+    public static final ComponentType<VolumeComponent> VOLUME_COMPONENT = Registry.register(
+            Registries.DATA_COMPONENT_TYPE,
+            Identifier.of(SoundRecordingMod.MOD_ID, "volume_component"),
+            ComponentType.<VolumeComponent>builder().codec(VolumeComponent.CODEC).build()
+    );
 
-//    public static final ComponentType<MP4PlayerComponent> MP4PLAYER_COMPONENT = Registry.register(
+//    public static final ComponentType<PositionComponent> POSITION_COMPONENT = Registry.register(
 //            Registries.DATA_COMPONENT_TYPE,
-//            Identifier.of(SoundRecordingMod.MOD_ID, "mp4player_component"),
-//            ComponentType.<MP4PlayerComponent>builder().codec(MP4PlayerComponent.CODEC).build()
+//            Identifier.of(SoundRecordingMod.MOD_ID, "position_component"),
+//            ComponentType.<PositionComponent>builder().codec(PositionComponent.CODEC).build()
 //    );
 
     public static final ComponentType<TestComponent> TEST_COMPONENT = Registry.register(

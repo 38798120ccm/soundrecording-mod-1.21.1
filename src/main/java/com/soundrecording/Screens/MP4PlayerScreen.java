@@ -22,11 +22,8 @@ public class MP4PlayerScreen extends HandledScreen<MP4PlayerScreenHandler> {
     @Override
     protected void init(){
         super.init();
-        ButtonWidget buttonWidget = ButtonWidget.builder(Text.of("Start Recording"), (btn) -> {
-            this.client.interactionManager.clickButton(handler.syncId, 0);
-            MinecraftClient.getInstance().setScreen(null);
-        }).dimensions(40, 40, 120, 20).build();
-        this.addDrawableChild(buttonWidget);
+        recordButtonBuild();
+
     }
 
     @Override
@@ -39,5 +36,20 @@ public class MP4PlayerScreen extends HandledScreen<MP4PlayerScreenHandler> {
         int y = (height - backgroundHeight)/2;
 
         context.drawTexture(GUI_TEXTURE, x, y, 0, 0, backgroundWidth, backgroundHeight);
+    }
+
+    void recordButtonBuild(){
+        ButtonWidget buttonWidget = ButtonWidget.builder(Text.of("Start Recording"), (btn) -> {
+            this.client.interactionManager.clickButton(handler.syncId, 0);
+            MinecraftClient.getInstance().setScreen(null);
+        }).dimensions(40, 40, 120, 20).build();
+        this.addDrawableChild(buttonWidget);
+    }
+
+    void isDirectionalButtonBuild(){
+        ButtonWidget buttonWidget = ButtonWidget.builder(Text.of("isDirection"), (btn) -> {
+            this.client.interactionManager.clickButton(handler.syncId, 1);
+        }).dimensions(40, 80, 120, 20).build();
+        this.addDrawableChild(buttonWidget);
     }
 }

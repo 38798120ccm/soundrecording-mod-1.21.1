@@ -76,14 +76,23 @@ public class MP4PlayerScreenHandler extends ScreenHandler {
     }
 
     public void setRecordingState(){
-        itemStack.set(ModComponents.STATUS_COMPONENT, new StatusComponent(MP4PlayerStatus.Recording.ordinal()));
         itemStack.set(ModComponents.TICK_COMPONENT, new TickComponent(0));
+        itemStack.get(ModComponents.ITEMSTACK_COMPONENT).itemStack().set(ModComponents.RECORDING_COMPONENT, new RecordingComponent());
+        itemStack.set(ModComponents.STATUS_COMPONENT, new StatusComponent(MP4PlayerStatus.Recording.ordinal()));
+    }
+
+    public void changeIsDirectional(){
+        boolean target = !itemStack.get(ModComponents.IS_DIRECTIONAL_COMPONENT).isDirectional();
+        itemStack.set(ModComponents.IS_DIRECTIONAL_COMPONENT, new IsDirectionalComponent(target));
     }
 
     @Override
     public boolean onButtonClick(PlayerEntity player, int id) {
         if(id == 0 && itemStack.get(ModComponents.ITEMSTACK_COMPONENT).itemStack().isOf(ModItems.MICROSD)){
             setRecordingState();
+        }
+        else if(id == 1){
+            changeIsDirectional();
         }
         return super.onButtonClick(player, id);
     }

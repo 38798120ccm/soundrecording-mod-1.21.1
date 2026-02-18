@@ -25,7 +25,9 @@ public class ModItems {
     public static final Item MP4PLAYER = register("mp4player", new MP4Player(new MP4Player.Settings().maxCount(1)
             .component(ModComponents.ITEMSTACK_COMPONENT, new ItemStackComponent(ItemStack.EMPTY))
             .component(ModComponents.TICK_COMPONENT, new TickComponent(0))
-            .component(ModComponents.STATUS_COMPONENT, new StatusComponent(0))));
+            .component(ModComponents.STATUS_COMPONENT, new StatusComponent(0))
+            .component(ModComponents.IS_DIRECTIONAL_COMPONENT, new IsDirectionalComponent(true))
+            .component(ModComponents.VOLUME_COMPONENT, new VolumeComponent(1f))));
     public static final Item MICROSD = register("microsd", new MicroSD(new MicroSD.Settings()
             .component(ModComponents.RECORDING_COMPONENT, new RecordingComponent())
             .component(ModComponents.TICK_COMPONENT, new TickComponent(0))));

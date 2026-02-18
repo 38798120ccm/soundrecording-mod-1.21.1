@@ -11,20 +11,19 @@ import net.minecraft.util.math.BlockPos;
 import java.util.ArrayList;
 import java.util.List;
 
-public record RecordingComponent(List<Identifier> identifiers, List<Double> x, List<Double> y, List<Double> z, List<Integer> tick,
-                                 List<Double> volume, List<Double> pitch, int size) {
+public record RecordingComponent(List<Identifier> identifiers, List<PositionComponent> pos, List<DirectionComponent> dir,
+                                 List<Integer> tick, List<Double> volume, List<Double> pitch, int size) {
 //, List<Boolean> repeat, List<Integer> repeatDelay, List<Integer> attenuationtype, List<Boolean> relative
 
     public RecordingComponent() {
-        this(new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), 0);
+        this(new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), 0);
     }
 
     public static final Codec<RecordingComponent> CODEC = RecordCodecBuilder.create(builder ->
         builder.group(
                 Identifier.CODEC.listOf().fieldOf("identifiers").forGetter(RecordingComponent::identifiers),
-                Codec.DOUBLE.listOf().fieldOf("relative_positions_x").forGetter(RecordingComponent::x),
-                Codec.DOUBLE.listOf().fieldOf("relative_positions_y").forGetter(RecordingComponent::y),
-                Codec.DOUBLE.listOf().fieldOf("relative_positions_z").forGetter(RecordingComponent::z),
+                PositionComponent.CODEC.listOf().fieldOf("positions").forGetter(RecordingComponent::pos),
+                DirectionComponent.CODEC.listOf().fieldOf("directions").forGetter(RecordingComponent::dir),
                 Codec.INT.listOf().fieldOf("ticks").forGetter(RecordingComponent::tick),
                 Codec.DOUBLE.listOf().fieldOf("volumes").forGetter(RecordingComponent::volume),
                 Codec.DOUBLE.listOf().fieldOf("pitches").forGetter(RecordingComponent::pitch),

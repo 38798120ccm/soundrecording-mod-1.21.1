@@ -3,7 +3,9 @@ package com.soundrecording.Events;
 import com.soundrecording.Componets.ModComponents;
 import com.soundrecording.Items.MP4Player.MP4PlayerStatus;
 import com.soundrecording.Items.ModItems;
+import com.soundrecording.Payload.DirectionPayload;
 import com.soundrecording.Payload.ItemStackRecordC2SPayload;
+import com.soundrecording.Payload.PositionPayload;
 import com.soundrecording.Payload.SoundPayload;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.MinecraftClient;
@@ -27,7 +29,8 @@ public class SoundListener implements SoundInstanceListener {
                 ItemStackRecordC2SPayload itemStackRecordC2SPayload =
                         new ItemStackRecordC2SPayload(
                                 new SoundPayload(sound.getId(), sound.getVolume(), sound.getPitch(),
-                                        sound.getX() - player.getX(), sound.getY() - player.getY(), sound.getZ() - player.getZ()),
+                                        new PositionPayload(sound.getX() - player.getX(), sound.getY() - player.getY(), sound.getZ() - player.getZ()),
+                                        new DirectionPayload(player.getYaw(), player.getPitch())),
                                 i, stack.get(ModComponents.TICK_COMPONENT).tick()
                         );
                 ClientPlayNetworking.send(itemStackRecordC2SPayload);

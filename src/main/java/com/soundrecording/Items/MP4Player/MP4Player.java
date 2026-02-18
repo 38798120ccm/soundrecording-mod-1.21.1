@@ -4,10 +4,13 @@ import com.soundrecording.Componets.*;
 import com.soundrecording.Items.ModItems;
 import com.soundrecording.Payload.ItemStackPayload;
 import com.soundrecording.Screens.MP4PlayerScreenHandler;
+import com.soundrecording.SoundInstance.PlayerFollowingSoundInstance;
 import com.soundrecording.SoundRecordingMod;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.sound.Sound;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.Item;
@@ -95,17 +98,7 @@ public class MP4Player extends Item implements ExtendedScreenHandlerFactory<Item
                     stack.set(ModComponents.TICK_COMPONENT, new TickComponent(0));
                 }
                 else {
-                    if(world.isClient){
-                        RecordingComponent rc = stack.get(ModComponents.ITEMSTACK_COMPONENT).itemStack().get(ModComponents.RECORDING_COMPONENT);
-                        for(int i=0; i<rc.tick().size(); i++){
-                            if(rc.tick().get(i) == tickComponent.tick()){
-                                world.playSound(rc.x().get(i).doubleValue() + entity.getX(), rc.y().get(i).doubleValue() + entity.getY(),
-                                        rc.z().get(i).doubleValue() + entity.getZ(),
-                                        SoundEvent.of(rc.identifiers().get(i)), SoundCategory.RECORDS,
-                                        rc.volume().get(i).floatValue(), rc.pitch().get(i).floatValue(), false);
-                            }
-                        }
-                    }
+                    PlayTickSound(world, stack, tickComponent);
                     stack.set(ModComponents.TICK_COMPONENT, new TickComponent(nexttick));
                 }
                 //SoundRecordingMod.LOGGER.info("inventoryTick-soundplaying");
@@ -133,5 +126,23 @@ public class MP4Player extends Item implements ExtendedScreenHandlerFactory<Item
     @Override
     public boolean allowComponentsUpdateAnimation(PlayerEntity player, Hand hand, ItemStack oldStack, ItemStack newStack) {
         return false;
+    }
+
+    void PlayTickSound(World world, ItemStack stack, TickComponent tickComponent){
+        if(world.isClient){
+            RecordingComponent rc = stack.get(ModComponents.ITEMSTACK_COMPONENT).itemStack().get(ModComponents.RECORDING_COMPONENT);
+            MinecraftClient client = MinecraftClient.getInstance();
+            for(int i=0; i<rc.tick().size(); i++){
+                if(rc.tick().get(i) == tickComponent.tick()){
+                    PlayerFollowingSoundInstance instance = new PlayerFollowingSoundInstance(client.player,
+                            SoundEvent.of(rc.identifiers().get(i)), SoundCategory.RECORDS,
+                            rc.pos().get(i), rc.dir().get(i),
+                            rc.volume().get(i).floatValue()*stack.get(ModComponents.VOLUME_COMPONENT).volume(),
+                            rc.pitch().get(i).floatValue(),
+                            stack.get(ModComponents.IS_DIRECTIONAL_COMPONENT).isDirectional());
+                    client.getSoundManager().play(instance);
+                }
+            }
+        }
     }
 }
