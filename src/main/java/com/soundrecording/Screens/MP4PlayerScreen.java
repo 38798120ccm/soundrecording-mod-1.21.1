@@ -1,6 +1,7 @@
 package com.soundrecording.Screens;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.soundrecording.Screens.Widgets.MP4VolumeSlider;
 import com.soundrecording.SoundRecordingMod;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
@@ -23,6 +24,8 @@ public class MP4PlayerScreen extends HandledScreen<MP4PlayerScreenHandler> {
     protected void init(){
         super.init();
         recordButtonBuild();
+        isDirectionalButtonBuild();
+        volumeButtonBuild();
 
     }
 
@@ -51,5 +54,10 @@ public class MP4PlayerScreen extends HandledScreen<MP4PlayerScreenHandler> {
             this.client.interactionManager.clickButton(handler.syncId, 1);
         }).dimensions(40, 80, 120, 20).build();
         this.addDrawableChild(buttonWidget);
+    }
+
+    void volumeButtonBuild(){
+        MP4VolumeSlider slider = new MP4VolumeSlider(this.width / 2 - 100, 120,200, 20, Text.literal("volume"), 1f);
+        this.addDrawableChild(slider);
     }
 }

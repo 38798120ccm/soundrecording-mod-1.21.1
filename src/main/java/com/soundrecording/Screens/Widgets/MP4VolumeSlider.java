@@ -1,6 +1,9 @@
 package com.soundrecording.Screens.Widgets;
 
+import com.soundrecording.Componets.ModComponents;
+import com.soundrecording.Componets.VolumeComponent;
 import net.minecraft.client.gui.widget.SliderWidget;
+import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 
 public class MP4VolumeSlider extends SliderWidget {
@@ -10,11 +13,18 @@ public class MP4VolumeSlider extends SliderWidget {
 
     @Override
     protected void updateMessage() {
-
+        this.setMessage(Text.literal("" + (int)(this.value * 100)));
     }
 
     @Override
     protected void applyValue() {
+        float finalValue = (float) this.value;
+    }
+
+    @Override
+    public void onRelease(double mouseX, double mouseY){
+        super.onRelease(mouseX, mouseY);
 
     }
+
 }

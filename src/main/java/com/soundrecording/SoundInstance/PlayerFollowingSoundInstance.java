@@ -1,21 +1,25 @@
 package com.soundrecording.SoundInstance;
 
-import com.soundrecording.Componets.DirectionComponent;
-import com.soundrecording.Componets.PositionComponent;
-import net.minecraft.client.sound.MovingSoundInstance;
-import net.minecraft.client.sound.SoundInstance;
+import com.soundrecording.Codecs.DirectionCodec;
+import com.soundrecording.Codecs.PositionCodec;
+import com.soundrecording.Codecs.SoundCodec;
+import net.minecraft.client.sound.*;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.math.floatprovider.FloatProvider;
+import net.minecraft.util.math.floatprovider.FloatSupplier;
+import net.minecraft.util.math.random.Random;
 
 public class PlayerFollowingSoundInstance extends MovingSoundInstance {
 
     private final LivingEntity entity;
-    private final PositionComponent pos;
-    private final DirectionComponent dir;
+    private final PositionCodec pos;
+    private final DirectionCodec dir;
     private final boolean Isdirectional;
-    public PlayerFollowingSoundInstance(LivingEntity entity, SoundEvent soundEvent, SoundCategory soundCategory, PositionComponent pos,
-                                        DirectionComponent dir, float volume, float pitch, boolean Isdirectional) {
+    public PlayerFollowingSoundInstance(LivingEntity entity, SoundEvent soundEvent, SoundCategory soundCategory, PositionCodec pos,
+                                        DirectionCodec dir, float volume, float pitch, boolean Isdirectional, SoundCodec soundCodec) {
         super(soundEvent, soundCategory, SoundInstance.createRandom());
         this.entity = entity;
         this.volume = volume;
@@ -24,7 +28,26 @@ public class PlayerFollowingSoundInstance extends MovingSoundInstance {
         this.pos = pos;
         this.dir = dir;
         this.Isdirectional = Isdirectional;
+        this.sound = new Sound(soundCodec.soundIdentifier(), (random) -> 1.0f, (random) -> 1.0f, 1,
+                Sound.RegistrationType.getByName(soundCodec.registrationType()),
+                soundCodec.stream(), false, soundCodec.attenuation());
         this.setPositionToEntity();
+    }
+
+    @Override
+    public WeightedSoundSet getSoundSet(SoundManager soundManager) {
+        if (this.id.equals(SoundManager.INTENTIONALLY_EMPTY_ID)) {
+            this.sound = SoundManager.INTENTIONALLY_EMPTY_SOUND;
+            return SoundManager.INTENTIONALLY_EMPTY_SOUND_SET;
+        } else {
+            WeightedSoundSet weightedSoundSet = soundManager.get(this.id);
+            if (weightedSoundSet == null) {
+                this.sound = SoundManager.MISSING_SOUND;
+            } else {
+
+            }
+            return weightedSoundSet;
+        }
     }
 
     @Override

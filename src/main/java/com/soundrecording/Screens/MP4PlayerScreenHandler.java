@@ -1,14 +1,11 @@
 package com.soundrecording.Screens;
 
+import com.soundrecording.Codecs.ItemStackCodec;
 import com.soundrecording.Componets.*;
 import com.soundrecording.Items.MP4Player.MP4PlayerInventory;
 import com.soundrecording.Items.MP4Player.MP4PlayerSlot;
 import com.soundrecording.Items.MP4Player.MP4PlayerStatus;
 import com.soundrecording.Items.ModItems;
-import com.soundrecording.Payload.ItemStackPayload;
-import com.soundrecording.SoundRecordingMod;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.component.ComponentChanges;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
@@ -22,7 +19,7 @@ public class MP4PlayerScreenHandler extends ScreenHandler {
     private final MP4PlayerInventory mp4PlayerInventory;
 
     // Client Constructor
-    public MP4PlayerScreenHandler(int synvId, PlayerInventory playerInventory, ItemStackPayload payload){
+    public MP4PlayerScreenHandler(int synvId, PlayerInventory playerInventory, ItemStackCodec payload){
         this(synvId, playerInventory, payload.itemStack());
     }
 
@@ -70,7 +67,7 @@ public class MP4PlayerScreenHandler extends ScreenHandler {
 
     @Override
     public void onContentChanged(Inventory inventory){
-        itemStack.set(ModComponents.ITEMSTACK_COMPONENT, new ItemStackComponent(mp4PlayerInventory.getStack(0)));
+        itemStack.set(ModComponents.ITEMSTACK_COMPONENT, new ItemStackCodec(mp4PlayerInventory.getStack(0)));
         itemStack.set(ModComponents.STATUS_COMPONENT, new StatusComponent(MP4PlayerStatus.Idle.ordinal()));
         itemStack.set(ModComponents.TICK_COMPONENT, new TickComponent(0));
     }

@@ -1,6 +1,6 @@
 package com.soundrecording.Screens;
 
-import com.soundrecording.Payload.ItemStackPayload;
+import com.soundrecording.Codecs.ItemStackCodec;
 import com.soundrecording.SoundRecordingMod;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerType;
 import net.minecraft.item.ItemStack;
@@ -18,7 +18,7 @@ public class ModScreenHandler {
     public static final ScreenHandlerType<MP4PlayerScreenHandler> MP4PLAYER_SCREEN_HANDLER =
 //            register("mp4player_screen_handler", MP4PlayerScreenHandler::new, ItemStackPayload.PACKET_CODEC);
             Registry.register(Registries.SCREEN_HANDLER, Identifier.of(SoundRecordingMod.MOD_ID, "mp4player_screen_handler"),
-                    new ExtendedScreenHandlerType<>(MP4PlayerScreenHandler::new, ItemStackPayload.PACKET_CODEC));
+                    new ExtendedScreenHandlerType<>(MP4PlayerScreenHandler::new, ItemStackCodec.PACKET_CODEC));
 
 //    public static <T extends ScreenHandler, D extends CustomPayload> ExtendedScreenHandlerType<T, D>
 //                register(String name,

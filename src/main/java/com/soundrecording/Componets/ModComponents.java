@@ -1,5 +1,6 @@
 package com.soundrecording.Componets;
 
+import com.soundrecording.Codecs.ItemStackCodec;
 import com.soundrecording.SoundRecordingMod;
 import net.minecraft.component.ComponentType;
 import net.minecraft.registry.Registries;
@@ -17,10 +18,10 @@ public class ModComponents {
             ComponentType.<RecordingComponent>builder().codec(RecordingComponent.CODEC).build()
     );
 
-    public static final ComponentType<ItemStackComponent> ITEMSTACK_COMPONENT = Registry.register(
+    public static final ComponentType<ItemStackCodec> ITEMSTACK_COMPONENT = Registry.register(
             Registries.DATA_COMPONENT_TYPE,
             Identifier.of(SoundRecordingMod.MOD_ID, "itemstack_component"),
-            ComponentType.<ItemStackComponent>builder().codec(ItemStackComponent.CODEC).build()
+            ComponentType.<ItemStackCodec>builder().codec(ItemStackCodec.CODEC).build()
     );
 
     public static final ComponentType<TickComponent> TICK_COMPONENT = Registry.register(
@@ -44,15 +45,4 @@ public class ModComponents {
             ComponentType.<VolumeComponent>builder().codec(VolumeComponent.CODEC).build()
     );
 
-//    public static final ComponentType<PositionComponent> POSITION_COMPONENT = Registry.register(
-//            Registries.DATA_COMPONENT_TYPE,
-//            Identifier.of(SoundRecordingMod.MOD_ID, "position_component"),
-//            ComponentType.<PositionComponent>builder().codec(PositionComponent.CODEC).build()
-//    );
-
-    public static final ComponentType<TestComponent> TEST_COMPONENT = Registry.register(
-            Registries.DATA_COMPONENT_TYPE,
-            Identifier.of(SoundRecordingMod.MOD_ID, "test_component"),
-            ComponentType.<TestComponent>builder().codec(TestComponent.CODEC).build()
-    );
 }

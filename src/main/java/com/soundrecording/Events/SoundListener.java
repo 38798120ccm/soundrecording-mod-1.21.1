@@ -1,12 +1,13 @@
 package com.soundrecording.Events;
 
+import com.soundrecording.Codecs.DirectionCodec;
+import com.soundrecording.Codecs.PositionCodec;
+import com.soundrecording.Codecs.SoundCodec;
 import com.soundrecording.Componets.ModComponents;
 import com.soundrecording.Items.MP4Player.MP4PlayerStatus;
 import com.soundrecording.Items.ModItems;
-import com.soundrecording.Payload.DirectionPayload;
 import com.soundrecording.Payload.ItemStackRecordC2SPayload;
-import com.soundrecording.Payload.PositionPayload;
-import com.soundrecording.Payload.SoundPayload;
+import com.soundrecording.SoundRecordingMod;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
@@ -26,15 +27,17 @@ public class SoundListener implements SoundInstanceListener {
                 if(!stack.isOf(ModItems.MP4PLAYER)){continue;}
                 if(stack.get(ModComponents.STATUS_COMPONENT).status() != MP4PlayerStatus.Recording.ordinal()){continue;}
                 if(stack.get(ModComponents.ITEMSTACK_COMPONENT).itemStack() == ItemStack.EMPTY){continue;}
-                ItemStackRecordC2SPayload itemStackRecordC2SPayload =
-                        new ItemStackRecordC2SPayload(
-                                new SoundPayload(sound.getId(), sound.getVolume(), sound.getPitch(),
-                                        new PositionPayload(sound.getX() - player.getX(), sound.getY() - player.getY(), sound.getZ() - player.getZ()),
-                                        new DirectionPayload(player.getYaw(), player.getPitch())),
-                                i, stack.get(ModComponents.TICK_COMPONENT).tick()
-                        );
-                ClientPlayNetworking.send(itemStackRecordC2SPayload);
+                sendSoundPayloadC2S(sound, player, i, stack);
             }
         }
+    }
+
+    void sendSoundPayloadC2S(SoundInstance sound, ClientPlayerEntity player, int slotId, ItemStack stack){
+        ItemStackRecordC2SPayload payload = new ItemStackRecordC2SPayload(
+                new SoundCodec(sound.getId(), sound.getSound().getIdentifier(), sound.getVolume(), sound.getPitch(),
+                        sound.getSound().getRegistrationType().name(), sound.getSound().isStreamed(), sound.getSound().getAttenuation()),
+                new PositionCodec(sound.getX() - player.getX(), sound.getY() - player.getY(), sound.getZ() - player.getZ()),
+                new DirectionCodec(player.getYaw(), player.getPitch()), slotId, stack.get(ModComponents.TICK_COMPONENT).tick());
+        ClientPlayNetworking.send(payload);
     }
 }
