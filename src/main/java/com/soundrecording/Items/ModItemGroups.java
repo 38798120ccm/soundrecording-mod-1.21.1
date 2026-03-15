@@ -23,8 +23,6 @@ public class ModItemGroups {
         Registry.register(Registries.ITEM_GROUP,SOUND_RECORDING_ITEM_GROUP_KEY, SOUND_RECORDING_ITEM_GROUP);
 
         ItemGroupEvents.modifyEntriesEvent(SOUND_RECORDING_ITEM_GROUP_KEY).register(itemGroup -> {
-            itemGroup.add(ModItems.TESTITEM);
-            itemGroup.add(ModItems.MICROPHONE);
             itemGroup.add(ModItems.MP4PLAYER);
             itemGroup.add(ModItems.MICROSD);
 

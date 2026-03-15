@@ -17,9 +17,9 @@ public class PlayerFollowingSoundInstance extends MovingSoundInstance {
     private final LivingEntity entity;
     private final PositionCodec pos;
     private final DirectionCodec dir;
-    private final boolean Isdirectional;
+    private final boolean issoundaround;
     public PlayerFollowingSoundInstance(LivingEntity entity, SoundEvent soundEvent, SoundCategory soundCategory, PositionCodec pos,
-                                        DirectionCodec dir, float volume, float pitch, boolean Isdirectional, SoundCodec soundCodec) {
+                                        DirectionCodec dir, float volume, float pitch, boolean issoundaround, SoundCodec soundCodec) {
         super(soundEvent, soundCategory, SoundInstance.createRandom());
         this.entity = entity;
         this.volume = volume;
@@ -27,7 +27,7 @@ public class PlayerFollowingSoundInstance extends MovingSoundInstance {
         this.repeat = false;
         this.pos = pos;
         this.dir = dir;
-        this.Isdirectional = Isdirectional;
+        this.issoundaround = issoundaround;
         this.sound = new Sound(soundCodec.soundIdentifier(), (random) -> 1.0f, (random) -> 1.0f, 1,
                 Sound.RegistrationType.getByName(soundCodec.registrationType()),
                 soundCodec.stream(), false, soundCodec.attenuation());
@@ -64,8 +64,8 @@ public class PlayerFollowingSoundInstance extends MovingSoundInstance {
 
     private void setPositionToEntity() {
         double diff = Math.toRadians(entity.getYaw() - dir.yaw());
-        this.x = this.entity.getX() + (Isdirectional? pos.x() * Math.cos(diff) - pos.z() * Math.sin(diff):pos.x());
-        this.y = this.entity.getY() + pos.y();
-        this.z = this.entity.getZ() + (Isdirectional? pos.x() * Math.sin(diff) + pos.z() * Math.cos(diff):pos.z());
+        this.x = this.entity.getX() + (issoundaround? pos.x() * Math.cos(diff) - pos.z() * Math.sin(diff):0);
+        this.y = this.entity.getY() + (issoundaround? pos.y(): 0);
+        this.z = this.entity.getZ() + (issoundaround? pos.x() * Math.sin(diff) + pos.z() * Math.cos(diff):0);
     }
 }

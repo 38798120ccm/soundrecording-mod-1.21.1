@@ -2,8 +2,10 @@ package com.soundrecording.Items.MP4Player;
 
 import com.soundrecording.Codecs.ItemStackCodec;
 import com.soundrecording.Componets.*;
+import com.soundrecording.Payload.MP4ScreenItemStackS2CPayload;
 import com.soundrecording.Screens.MP4PlayerScreenHandler;
 import com.soundrecording.SoundInstance.PlayerFollowingSoundInstance;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
@@ -22,6 +24,8 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Collections;
 import java.util.List;
 
 public class MP4Player extends Item implements ExtendedScreenHandlerFactory<ItemStackCodec>{
@@ -36,16 +40,23 @@ public class MP4Player extends Item implements ExtendedScreenHandlerFactory<Item
         if(stack.contains(ModComponents.STATUS_COMPONENT)){
             StatusComponent statusComponent = stack.get(ModComponents.STATUS_COMPONENT);
             String key = "";
-            if(MP4PlayerStatus.Idle.ordinal() == statusComponent.status()){key = "Mode: Idle";}
-            if(MP4PlayerStatus.SoundPlaying.ordinal() == statusComponent.status()){key = "Mode: SoundPlaying";}
-            if(MP4PlayerStatus.Recording.ordinal() == statusComponent.status()){key = "Mode: Recording";}
+            if(MP4PlayerStatus.Recording.ordinal() == statusComponent.recordstatus()){key = "Mode: Recording";}
+            else {
+                if (MP4PlayerStatus.Idle.ordinal() == statusComponent.playstatus()) {
+                    key = "Mode: Idle";
+                }
+                if (MP4PlayerStatus.Loop.ordinal() == statusComponent.playstatus()) {
+                    key = "Mode: Loop";
+                }
+            }
             tooltip.add(Text.translatable(key).formatted(Formatting.GOLD));
         }
 
         if(stack.contains(ModComponents.TICK_COMPONENT)) {
-            TickComponent tickComponent = stack.get(ModComponents.TICK_COMPONENT);
-            int tick = tickComponent.tick()/20;
-            tooltip.add(Text.translatable("soundrecording-mod.tick", tick).formatted(Formatting.GOLD));
+            int current_min = stack.get(ModComponents.TICK_COMPONENT).tick()/120;
+            int current_sec = (stack.get(ModComponents.TICK_COMPONENT).tick()/20)%60;
+            String current = String.format("%02d:%02d", current_min, current_sec);
+            tooltip.add(Text.literal("Current: " + current).formatted(Formatting.GOLD));
         }
     }
 
@@ -60,18 +71,11 @@ public class MP4Player extends Item implements ExtendedScreenHandlerFactory<Item
                     user.openHandledScreen(this);
             }
             else if(itemStackCodec.itemStack().contains(ModComponents.TICK_COMPONENT)){
-                if(statusComponent.status() == MP4PlayerStatus.Recording.ordinal()){
-                    itemStack.set(ModComponents.STATUS_COMPONENT, new StatusComponent(MP4PlayerStatus.Idle.ordinal()));
-                    itemStack.set(ModComponents.TICK_COMPONENT, new TickComponent(0));
-                    itemStackCodec.itemStack().set(ModComponents.TICK_COMPONENT, new TickComponent(tickComponent.tick()));
+                if(statusComponent.playstatus() == MP4PlayerStatus.Idle.ordinal()){
+                    itemStack.set(ModComponents.STATUS_COMPONENT, new StatusComponent(MP4PlayerStatus.Loop.ordinal(), statusComponent.recordstatus()));
                 }
-                else if(statusComponent.status() == MP4PlayerStatus.Idle.ordinal()){
-                    itemStack.set(ModComponents.STATUS_COMPONENT, new StatusComponent(MP4PlayerStatus.SoundPlaying.ordinal()));
-                    itemStack.set(ModComponents.TICK_COMPONENT, new TickComponent(0));
-                }
-                else if(statusComponent.status() == MP4PlayerStatus.SoundPlaying.ordinal()){
-                    itemStack.set(ModComponents.STATUS_COMPONENT, new StatusComponent(MP4PlayerStatus.Idle.ordinal()));
-                    itemStack.set(ModComponents.TICK_COMPONENT, new TickComponent(0));
+                else if(statusComponent.playstatus() == MP4PlayerStatus.Loop.ordinal()){
+                    itemStack.set(ModComponents.STATUS_COMPONENT, new StatusComponent(MP4PlayerStatus.Idle.ordinal(), statusComponent.recordstatus()));
                 }
             }
         }
@@ -80,23 +84,37 @@ public class MP4Player extends Item implements ExtendedScreenHandlerFactory<Item
 
     @Override
     public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
-        if(stack.contains(ModComponents.ITEMSTACK_COMPONENT)){
-            StatusComponent statusComponent = stack.get(ModComponents.STATUS_COMPONENT);
-            TickComponent tickComponent = stack.get(ModComponents.TICK_COMPONENT);
-            int nexttick = tickComponent.tick() + 1;
-            if(statusComponent.status() == MP4PlayerStatus.Recording.ordinal()){
+        if(!stack.contains(ModComponents.ITEMSTACK_COMPONENT)) return;
+        if(!stack.contains(ModComponents.TICK_COMPONENT)) return;
+        if(!stack.contains(ModComponents.STATUS_COMPONENT)) return;
+        if(stack.get(ModComponents.ITEMSTACK_COMPONENT).itemStack().isEmpty()) return;
+
+        StatusComponent statusComponent = stack.get(ModComponents.STATUS_COMPONENT);
+        TickComponent tickComponent = stack.get(ModComponents.TICK_COMPONENT);
+        int nexttick = tickComponent.tick() + 1;
+
+        if(statusComponent.playstatus() == MP4PlayerStatus.Loop.ordinal()){
+            if(statusComponent.recordstatus() == MP4PlayerStatus.Recording.ordinal()){
                 stack.set(ModComponents.TICK_COMPONENT, new TickComponent(nexttick));
-                //SoundRecordingMod.LOGGER.info("inventoryTick-recording");
             }
-            else if(statusComponent.status() == MP4PlayerStatus.SoundPlaying.ordinal()){
+            else if(statusComponent.recordstatus() == MP4PlayerStatus.PlayMode.ordinal()){
                 if(tickComponent.tick() >= stack.get(ModComponents.ITEMSTACK_COMPONENT).itemStack().get(ModComponents.TICK_COMPONENT).tick()){
                     stack.set(ModComponents.TICK_COMPONENT, new TickComponent(0));
                 }
                 else {
                     playTickSound(world, stack, tickComponent.tick());
                     stack.set(ModComponents.TICK_COMPONENT, new TickComponent(nexttick));
+
+                    if(world.isClient) return;
+                    if(entity instanceof ServerPlayerEntity serverPlayer){
+                        if (serverPlayer.currentScreenHandler instanceof MP4PlayerScreenHandler handler){
+                            if (world.getTime() % 10 == 0) {
+                                MP4ScreenItemStackS2CPayload payload = new MP4ScreenItemStackS2CPayload(stack, 0);
+                                ServerPlayNetworking.send(serverPlayer, payload);
+                            }
+                        }
+                    }
                 }
-                //SoundRecordingMod.LOGGER.info("inventoryTick-soundplaying");
             }
         }
     }
@@ -125,16 +143,20 @@ public class MP4Player extends Item implements ExtendedScreenHandlerFactory<Item
 
     void playTickSound(World world, ItemStack stack, int tick){
         if(world.isClient){
+            boolean issoundaround = stack.get(ModComponents.IS_SOUNDAROUND_COMPONENT).issoundaround();
             RecordingComponent rc = stack.get(ModComponents.ITEMSTACK_COMPONENT).itemStack().get(ModComponents.RECORDING_COMPONENT);
+            float volume = stack.get(ModComponents.VOLUME_COMPONENT).volume();
             MinecraftClient client = MinecraftClient.getInstance();
-            for(int i=0; i<rc.tick().size(); i++){
-                if(rc.tick().get(i) == tick){
+
+            int index = Collections.binarySearch(rc.tick(), tick);
+            if(index >= 0){
+                for(int i=0; i<rc.sound().get(index).size(); i++){
                     PlayerFollowingSoundInstance instance = new PlayerFollowingSoundInstance(client.player,
-                            SoundEvent.of(rc.sound().get(i).eventIdentifier()), SoundCategory.RECORDS,
-                            rc.pos().get(i), rc.dir().get(i),
-                            rc.sound().get(i).volume()*stack.get(ModComponents.VOLUME_COMPONENT).volume(),
-                            rc.sound().get(i).pitch(),
-                            stack.get(ModComponents.IS_DIRECTIONAL_COMPONENT).isDirectional(), rc.sound().get(i));
+                            SoundEvent.of(rc.sound().get(index).get(i).eventIdentifier()), SoundCategory.RECORDS,
+                            rc.pos().get(index).get(i), rc.dir().get(index).get(i),
+                            rc.sound().get(index).get(i).volume() * volume,
+                            rc.sound().get(index).get(i).pitch(),
+                            issoundaround, rc.sound().get(index).get(i));
                     client.getSoundManager().play(instance);
                 }
             }

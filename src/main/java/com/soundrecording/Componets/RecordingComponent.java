@@ -10,7 +10,7 @@ import com.soundrecording.Codecs.SoundCodec;
 import java.util.ArrayList;
 import java.util.List;
 
-public record RecordingComponent(List<SoundCodec> sound, List<PositionCodec> pos, List<DirectionCodec> dir,
+public record RecordingComponent(List<List<SoundCodec>> sound, List<List<PositionCodec>> pos, List<List<DirectionCodec>> dir,
                                  List<Integer> tick, int size) {
 
     public RecordingComponent() {
@@ -19,17 +19,13 @@ public record RecordingComponent(List<SoundCodec> sound, List<PositionCodec> pos
 
     public static final Codec<RecordingComponent> CODEC = RecordCodecBuilder.create(builder ->
         builder.group(
-                SoundCodec.CODEC.listOf().fieldOf("sounds").forGetter(RecordingComponent::sound),
-                PositionCodec.CODEC.listOf().fieldOf("positions").forGetter(RecordingComponent::pos),
-                DirectionCodec.CODEC.listOf().fieldOf("directions").forGetter(RecordingComponent::dir),
+                SoundCodec.CODEC.listOf().listOf().fieldOf("sounds").forGetter(RecordingComponent::sound),
+                PositionCodec.CODEC.listOf().listOf().fieldOf("positions").forGetter(RecordingComponent::pos),
+                DirectionCodec.CODEC.listOf().listOf().fieldOf("directions").forGetter(RecordingComponent::dir),
                 Codec.INT.listOf().fieldOf("ticks").forGetter(RecordingComponent::tick),
                 Codec.INT.fieldOf("size").forGetter(RecordingComponent::size)
         ).apply(builder, RecordingComponent::new)
     );
-
-    public int lastTick(){
-        return (size>0? tick().get(size-1): 0);
-    }
 }
 
 

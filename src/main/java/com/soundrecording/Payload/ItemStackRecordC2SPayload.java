@@ -12,7 +12,7 @@ import net.minecraft.util.Identifier;
 
 public record ItemStackRecordC2SPayload(SoundCodec soundPayload, PositionCodec posPayload,
                                         DirectionCodec dirPayload, int slotId, int tick) implements CustomPayload {
-    public static final Id<ItemStackRecordC2SPayload> ID = new Id<>(Identifier.of(SoundRecordingMod.MOD_ID, "itemstackrecord-payload"));
+    public static final Id<ItemStackRecordC2SPayload> ID = new Id<>(Identifier.of(SoundRecordingMod.MOD_ID, "itemstackrecordc2s-payload"));
     public static final PacketCodec<RegistryByteBuf, ItemStackRecordC2SPayload> PACKET_CODEC =
             PacketCodec.tuple(
                     SoundCodec.PACKET_CODEC, ItemStackRecordC2SPayload::soundPayload,

@@ -5,17 +5,19 @@ import com.soundrecording.Componets.*;
 import com.soundrecording.Items.MP4Player.MP4PlayerInventory;
 import com.soundrecording.Items.MP4Player.MP4PlayerSlot;
 import com.soundrecording.Items.MP4Player.MP4PlayerStatus;
-import com.soundrecording.Items.ModItems;
+import com.soundrecording.Payload.MP4ScreenItemStackS2CPayload;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
+import net.minecraft.screen.ScreenHandlerListener;
 import net.minecraft.screen.slot.Slot;
+import net.minecraft.server.network.ServerPlayerEntity;
 
-public class MP4PlayerScreenHandler extends ScreenHandler {
-    private final ItemStack itemStack;
-    private final PlayerInventory playerInventory;
+public class MP4PlayerScreenHandler extends ScreenHandler implements ScreenHandlerListener {
+    public ItemStack itemStack;
+    public final PlayerInventory playerInventory;
     private final MP4PlayerInventory mp4PlayerInventory;
 
     // Client Constructor
@@ -34,6 +36,7 @@ public class MP4PlayerScreenHandler extends ScreenHandler {
 
         addPlayerInventory(playerInventory);
         addPlayerHotbar(playerInventory);
+        addListener(this);
     }
 
     @Override
@@ -65,36 +68,64 @@ public class MP4PlayerScreenHandler extends ScreenHandler {
         return this.mp4PlayerInventory.canPlayerUse(player);
     }
 
-    @Override
-    public void onContentChanged(Inventory inventory){
-        itemStack.set(ModComponents.ITEMSTACK_COMPONENT, new ItemStackCodec(mp4PlayerInventory.getStack(0)));
-        itemStack.set(ModComponents.STATUS_COMPONENT, new StatusComponent(MP4PlayerStatus.Idle.ordinal()));
-        itemStack.set(ModComponents.TICK_COMPONENT, new TickComponent(0));
-    }
-
     public void setRecordingState(){
         itemStack.set(ModComponents.TICK_COMPONENT, new TickComponent(0));
         itemStack.get(ModComponents.ITEMSTACK_COMPONENT).itemStack().set(ModComponents.RECORDING_COMPONENT, new RecordingComponent());
-        itemStack.set(ModComponents.STATUS_COMPONENT, new StatusComponent(MP4PlayerStatus.Recording.ordinal()));
+        itemStack.set(ModComponents.STATUS_COMPONENT, new StatusComponent(MP4PlayerStatus.Loop.ordinal(),MP4PlayerStatus.Recording.ordinal()));
     }
 
-    public void changeIsDirectional(){
-        boolean target = !itemStack.get(ModComponents.IS_DIRECTIONAL_COMPONENT).isDirectional();
-        itemStack.set(ModComponents.IS_DIRECTIONAL_COMPONENT, new IsDirectionalComponent(target));
+    public void stopRecordingState(){
+        itemStack.set(ModComponents.TICK_COMPONENT, new TickComponent(0));
+        itemStack.set(ModComponents.STATUS_COMPONENT, new StatusComponent(MP4PlayerStatus.Idle.ordinal(),MP4PlayerStatus.PlayMode.ordinal()));
     }
 
     @Override
     public boolean onButtonClick(PlayerEntity player, int id) {
-        if(id == 0 && itemStack.get(ModComponents.ITEMSTACK_COMPONENT).itemStack().isOf(ModItems.MICROSD)){
-            setRecordingState();
+        switch (id){
+            case 0:
+                if(itemStack.get(ModComponents.ITEMSTACK_COMPONENT).itemStack().isEmpty()) break;
+                stopRecordingState();
+                break;
+            case 1:
+                if(itemStack.get(ModComponents.ITEMSTACK_COMPONENT).itemStack().isEmpty()) break;
+                setRecordingState();
+                break;
+            case 10:
+                if(itemStack.get(ModComponents.ITEMSTACK_COMPONENT).itemStack().isEmpty()) break;
+                int status = itemStack.get(ModComponents.STATUS_COMPONENT).recordstatus();
+                itemStack.set(ModComponents.STATUS_COMPONENT, new StatusComponent(MP4PlayerStatus.Idle.ordinal(), status));
+                break;
+            case 11:
+                if(itemStack.get(ModComponents.ITEMSTACK_COMPONENT).itemStack().isEmpty()) break;
+                int status2 = itemStack.get(ModComponents.STATUS_COMPONENT).recordstatus();
+                itemStack.set(ModComponents.STATUS_COMPONENT, new StatusComponent(MP4PlayerStatus.Loop.ordinal(), status2));
+                break;
+            case 20:
+                itemStack.set(ModComponents.IS_SOUNDAROUND_COMPONENT, new IsSoundAroundComponent(false));
+                break;
+            case 21:
+                itemStack.set(ModComponents.IS_SOUNDAROUND_COMPONENT, new IsSoundAroundComponent(true));
+                break;
+            case 30:
+                if(itemStack.get(ModComponents.ITEMSTACK_COMPONENT).itemStack().isEmpty()) break;
+                int newtick = Math.min(itemStack.get(ModComponents.TICK_COMPONENT).tick() + 100,
+                        itemStack.get(ModComponents.ITEMSTACK_COMPONENT).itemStack().get(ModComponents.TICK_COMPONENT).tick());
+                itemStack.set(ModComponents.TICK_COMPONENT, new TickComponent(newtick));
+                break;
+            case 31:
+                if(itemStack.get(ModComponents.ITEMSTACK_COMPONENT).itemStack().isEmpty()) break;
+                int newtick2 = Math.max(itemStack.get(ModComponents.TICK_COMPONENT).tick() - 100, 0);
+                itemStack.set(ModComponents.TICK_COMPONENT, new TickComponent(newtick2));
+                break;
         }
-        else if(id == 1){
-            changeIsDirectional();
+        if (!player.getWorld().isClient) {
+            ServerPlayerEntity serverPlayer = (ServerPlayerEntity) player;
+            MP4ScreenItemStackS2CPayload payload = new MP4ScreenItemStackS2CPayload(itemStack, 0);
+            ServerPlayNetworking.send(serverPlayer, payload);
         }
+        sendContentUpdates();
         return super.onButtonClick(player, id);
     }
-
-
 
     private void addPlayerInventory(PlayerInventory playerInventory){
         for(int i=0; i<3; ++i){
@@ -108,5 +139,26 @@ public class MP4PlayerScreenHandler extends ScreenHandler {
         for(int i=0; i<9; ++i){
             this.addSlot(new Slot(playerInventory, i, 8+i*18, 142));
         }
+    }
+
+    @Override
+    public void onSlotUpdate(ScreenHandler handler, int slotId, ItemStack stack) {
+        if(mp4PlayerInventory.getStack(0).isEmpty()){}
+        else if(ItemStack.areEqual(itemStack.get(ModComponents.ITEMSTACK_COMPONENT).itemStack(), mp4PlayerInventory.getStack(0))) return;
+        else if(itemStack.get(ModComponents.STATUS_COMPONENT).recordstatus() == MP4PlayerStatus.Recording.ordinal()) return;
+
+        itemStack.set(ModComponents.ITEMSTACK_COMPONENT, new ItemStackCodec(mp4PlayerInventory.getStack(0)));
+        itemStack.set(ModComponents.STATUS_COMPONENT, new StatusComponent(MP4PlayerStatus.Idle.ordinal(), MP4PlayerStatus.PlayMode.ordinal()));
+        itemStack.set(ModComponents.TICK_COMPONENT, new TickComponent(0));
+        if (!this.playerInventory.player.getWorld().isClient) {
+            ServerPlayerEntity serverPlayer = (ServerPlayerEntity) this.playerInventory.player;
+            MP4ScreenItemStackS2CPayload payload = new MP4ScreenItemStackS2CPayload(itemStack, 0);
+            ServerPlayNetworking.send(serverPlayer, payload);
+        }
+    }
+
+    @Override
+    public void onPropertyUpdate(ScreenHandler handler, int property, int value) {
+
     }
 }

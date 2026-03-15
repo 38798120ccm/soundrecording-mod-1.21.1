@@ -13,14 +13,14 @@ public record ItemStackCodec(ItemStack itemStack) implements CustomPayload{
 
     public static final Codec<ItemStackCodec> CODEC = RecordCodecBuilder.create(builder ->
             builder.group(
-                    ItemStack.CODEC.fieldOf("itemStack").forGetter(ItemStackCodec::itemStack)
+                    ItemStack.OPTIONAL_CODEC.fieldOf("itemStack").forGetter(ItemStackCodec::itemStack)
             ).apply(builder, ItemStackCodec::new)
     );
 
     public static final CustomPayload.Id<ItemStackCodec> ID = new CustomPayload.Id<>(Identifier.of(SoundRecordingMod.MOD_ID, "itemstack-payload"));
 
     public static final PacketCodec<RegistryByteBuf, ItemStackCodec> PACKET_CODEC =
-            PacketCodec.tuple(ItemStack.PACKET_CODEC, ItemStackCodec::itemStack, ItemStackCodec::new);
+            PacketCodec.tuple(ItemStack.OPTIONAL_PACKET_CODEC, ItemStackCodec::itemStack, ItemStackCodec::new);
 
     @Override
     public CustomPayload.Id<? extends CustomPayload> getId() {

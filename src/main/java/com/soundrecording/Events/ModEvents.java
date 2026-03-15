@@ -17,7 +17,6 @@ public class ModEvents {
     private static void addSoundListenerListener() {
         ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
             if (!listenerRegistered) {
-                // By now, soundManager is guaranteed to be initialized
                 client.getSoundManager().registerListener(new SoundListener());
                 listenerRegistered = true;
             }

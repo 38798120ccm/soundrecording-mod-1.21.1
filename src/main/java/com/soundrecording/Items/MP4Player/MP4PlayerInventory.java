@@ -26,22 +26,6 @@ public class MP4PlayerInventory extends SimpleInventory {
         return stack.isOf(ModItems.MICROSD);
     }
 
-    //    @Override
-//    public boolean canInsert(ItemStack stack){
-//        boolean bl = false;
-//        Iterator var3 = this.heldStacks.iterator();
-//        if (!stack.isOf(ModItems.MICROSD)) { return false;}
-//        while(var3.hasNext()) {
-//            ItemStack itemStack = (ItemStack)var3.next();
-//            if (itemStack.isEmpty() || ItemStack.areItemsAndComponentsEqual(itemStack, stack) && itemStack.getCount() < itemStack.getMaxCount()) {
-//                bl = true;
-//                break;
-//            }
-//        }
-//
-//        return bl;
-//    }
-
     @Override
     public void markDirty() {
         super.markDirty();

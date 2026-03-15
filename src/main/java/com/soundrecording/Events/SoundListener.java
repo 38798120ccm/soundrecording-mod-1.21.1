@@ -7,7 +7,6 @@ import com.soundrecording.Componets.ModComponents;
 import com.soundrecording.Items.MP4Player.MP4PlayerStatus;
 import com.soundrecording.Items.ModItems;
 import com.soundrecording.Payload.ItemStackRecordC2SPayload;
-import com.soundrecording.SoundRecordingMod;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
@@ -25,7 +24,8 @@ public class SoundListener implements SoundInstanceListener {
             for (int i = 0; i < player.getInventory().size(); i++) {
                 ItemStack stack = player.getInventory().getStack(i);
                 if(!stack.isOf(ModItems.MP4PLAYER)){continue;}
-                if(stack.get(ModComponents.STATUS_COMPONENT).status() != MP4PlayerStatus.Recording.ordinal()){continue;}
+                if(stack.get(ModComponents.STATUS_COMPONENT).recordstatus() != MP4PlayerStatus.Recording.ordinal()){continue;}
+                if(stack.get(ModComponents.STATUS_COMPONENT).playstatus() != MP4PlayerStatus.Loop.ordinal()){continue;}
                 if(stack.get(ModComponents.ITEMSTACK_COMPONENT).itemStack() == ItemStack.EMPTY){continue;}
                 sendSoundPayloadC2S(sound, player, i, stack);
             }

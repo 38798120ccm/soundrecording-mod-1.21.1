@@ -16,7 +16,6 @@ import net.minecraft.util.Identifier;
 
 public class ModScreenHandler {
     public static final ScreenHandlerType<MP4PlayerScreenHandler> MP4PLAYER_SCREEN_HANDLER =
-//            register("mp4player_screen_handler", MP4PlayerScreenHandler::new, ItemStackPayload.PACKET_CODEC);
             Registry.register(Registries.SCREEN_HANDLER, Identifier.of(SoundRecordingMod.MOD_ID, "mp4player_screen_handler"),
                     new ExtendedScreenHandlerType<>(MP4PlayerScreenHandler::new, ItemStackCodec.PACKET_CODEC));
 

@@ -24,11 +24,13 @@ public class MicroSD extends Item {
         if (stack.contains(ModComponents.RECORDING_COMPONENT)){
             RecordingComponent recordingComponent = stack.get(ModComponents.RECORDING_COMPONENT);
             int size = recordingComponent.size();
-            tooltip.add(Text.translatable("NumOf soundInstance: " + String.valueOf(size)));
+            tooltip.add(Text.translatable("Sound Count: " + size));
         }
         if(stack.contains(ModComponents.TICK_COMPONENT)){
-            int tick = stack.get(ModComponents.TICK_COMPONENT).tick()/20;
-            tooltip.add(Text.translatable("Sec: " + String.valueOf(tick)));
+            int length_min = stack.get(ModComponents.TICK_COMPONENT).tick()/120;
+            int length_sec = (stack.get(ModComponents.TICK_COMPONENT).tick()/20)%60;
+            String length = String.format("%02d:%02d", length_min, length_sec);
+            tooltip.add(Text.translatable("Length: " + length));
         }
     }
 

@@ -34,10 +34,10 @@ public class ModComponents {
             Identifier.of(SoundRecordingMod.MOD_ID, "status_component"),
             ComponentType.<StatusComponent>builder().codec(StatusComponent.CODEC).build()
     );
-    public static final ComponentType<IsDirectionalComponent> IS_DIRECTIONAL_COMPONENT = Registry.register(
+    public static final ComponentType<IsSoundAroundComponent> IS_SOUNDAROUND_COMPONENT = Registry.register(
             Registries.DATA_COMPONENT_TYPE,
-            Identifier.of(SoundRecordingMod.MOD_ID, "isdirectional_component"),
-            ComponentType.<IsDirectionalComponent>builder().codec(IsDirectionalComponent.CODEC).build()
+            Identifier.of(SoundRecordingMod.MOD_ID, "issoundaround_component"),
+            ComponentType.<IsSoundAroundComponent>builder().codec(IsSoundAroundComponent.CODEC).build()
     );
     public static final ComponentType<VolumeComponent> VOLUME_COMPONENT = Registry.register(
             Registries.DATA_COMPONENT_TYPE,
